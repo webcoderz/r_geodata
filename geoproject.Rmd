@@ -1,0 +1,69 @@
+---
+title: "geo project"
+author: "cody webb"
+output:
+  html_document:
+    df_print: paged
+---
+
+#This is a notebook on how to plot geo data and query and map different things.
+
+first cell plots map of roads in ada ok.
+```{r}
+library(osmdata)
+q <- opq(bbox = 'ada ok usa')
+cway_sev <- osmdata_sp(q)
+sp::plot(cway_sev$osm_lines)
+```
+
+the next cell we plot all the cinemas in ada ok.
+```{r}
+if(!require("osmdata")) install.packages("osmdata")
+if(!require("tidyverse")) install.packages("tidyverse")
+if(!require("sf")) install.packages("sf")
+if(!require("ggmap")) install.packages("ggmap")
+
+
+library(tidyverse)
+library(osmdata)
+library(sf)
+library(ggmap)
+
+
+q <- opq(bbox = 'ada ok usa') %>%
+     add_osm_feature("amenity", "cinema")
+cinema <- osmdata_sf(q)
+
+ada_map <- get_map(getbb("ada ok usa"), maptype = "toner-background")
+ggmap(ada_map)+
+  geom_sf(data = cinema$osm_points,
+          inherit.aes = FALSE,
+          colour = "#238443",
+          fill = "#004529",
+          alpha = .5,
+          size = 4,
+          shape = 21)+
+  labs(x = "", y = "")
+```
+
+the next cell plots all the supermarkets in ada ok
+
+```{r}
+library(tidyverse)
+q <- opq(bbox = 'ada ok usa') %>%
+     add_osm_feature("shop", "supermarket")
+ada_map <- get_map(getbb("ada ok usa"), maptype = "toner-background")
+ada_supermarkets <- osmdata_sf(q)
+ggmap(ada_map)+
+geom_sf(data = ada_supermarkets$osm_points,
+          inherit.aes = FALSE,
+          colour = "#238443",
+          fill = "#004529",
+          alpha = .5,
+          size = 4,
+          shape = 21)+
+  labs(x = "", y = "")
+```
+
+
+
